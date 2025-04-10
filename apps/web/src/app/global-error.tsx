@@ -49,14 +49,14 @@ const GlobalError: React.FC<GlobalErrorProps> = ({ error, reset }) => {
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <button
               onClick={() => reset()}
-              className="flex items-center justify-center gap-2 px-6 py-3 bg-red-400 hover:bg-red-500 text-white rounded-lg font-medium transition-colors w-full sm:w-auto"
+              className="flex items-center justify-center gap-2 px-6 py-3 bg-red-400 text-white rounded-lg font-medium transition-colors w-full sm:w-auto"
             >
               <FiRefreshCw /> Try Again
             </button>
 
             <Link
               href="/"
-              className="flex items-center justify-center gap-2 px-6 py-3 bg-neutral-100 dark:bg-neutral-800 text-neutral-800 dark:text-neutral-200 rounded-lg font-medium hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-colors w-full sm:w-auto"
+              className="flex items-center hover:cursor-pointer justify-center gap-2 px-6 py-3 bg-neutral-100 dark:bg-neutral-800 text-neutral-800 dark:text-neutral-200 rounded-lg font-medium hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-colors w-full sm:w-auto"
             >
               <FiHome /> Back to Home
             </Link>

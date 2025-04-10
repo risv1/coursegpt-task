@@ -1,6 +1,7 @@
 import React from "react";
 import { FiCheck } from "react-icons/fi";
 import Footer from "@/components/common/Footer";
+import Navbar from "@/components/common/Navbar";
 
 const pricingPlans = [
   {
@@ -58,6 +59,7 @@ const pricingPlans = [
 const PricingPage = () => {
   return (
     <>
+      <Navbar />
       <div className="w-full py-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
@@ -116,7 +118,7 @@ const PricingPage = () => {
                   href={plan.ctaLink}
                   className={`py-3 px-6 rounded-lg font-medium text-center transition-colors ${
                     plan.highlighted
-                      ? "bg-red-400 hover:bg-red-500 text-white"
+                      ? "bg-red-400  text-black"
                       : "bg-neutral-100 dark:bg-neutral-800 hover:bg-neutral-200 dark:hover:bg-neutral-700 text-neutral-900 dark:text-white"
                   }`}
                 >
@@ -136,7 +138,7 @@ const PricingPage = () => {
             </p>
             <a
               href="/contact"
-              className="inline-block py-3 px-6 rounded-lg font-medium bg-red-400 hover:bg-red-500 text-white transition-colors"
+              className="inline-block py-3 px-6 rounded-lg font-medium bg-red-400 text-black transition-colors"
             >
               Contact Sales
             </a>

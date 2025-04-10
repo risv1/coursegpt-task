@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 import Footer from "@/components/common/Footer";
 import { FiMail, FiMapPin, FiPhone } from "react-icons/fi";
+import Navbar from "@/components/common/Navbar";
 
 const ContactPage = () => {
   const [formData, setFormData] = useState({
@@ -14,7 +15,11 @@ const ContactPage = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
+  ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
@@ -32,6 +37,7 @@ const ContactPage = () => {
 
   return (
     <>
+      <Navbar />
       <div className="w-full py-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
@@ -66,7 +72,8 @@ const ContactPage = () => {
                     Thank You!
                   </h3>
                   <p className="text-neutral-700 dark:text-neutral-300">
-                    Your message has been sent successfully. We&apos;ll get back to you as soon as possible.
+                    Your message has been sent successfully. We&apos;ll get back
+                    to you as soon as possible.
                   </p>
                   <button
                     onClick={() => setSubmitted(false)}
@@ -132,7 +139,9 @@ const ContactPage = () => {
                       <option value="general">General Inquiry</option>
                       <option value="support">Technical Support</option>
                       <option value="billing">Billing Question</option>
-                      <option value="partnership">Partnership Opportunity</option>
+                      <option value="partnership">
+                        Partnership Opportunity
+                      </option>
                     </select>
                   </div>
 
@@ -157,7 +166,7 @@ const ContactPage = () => {
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className={`w-full bg-red-400 hover:bg-red-500 text-white font-medium px-6 py-3 rounded-lg transition-colors ${
+                    className={`w-full bg-red-400 text-black font-medium px-6 py-3 rounded-lg transition-colors ${
                       isSubmitting ? "opacity-70 cursor-not-allowed" : ""
                     }`}
                   >
@@ -196,7 +205,8 @@ const ContactPage = () => {
                         Phone
                       </h3>
                       <p className="text-neutral-700 dark:text-neutral-300">
-                        +91 123 456 7890<br />
+                        +91 123 456 7890
+                        <br />
                         +91 987 654 3210
                       </p>
                     </div>
@@ -211,8 +221,10 @@ const ContactPage = () => {
                         Office
                       </h3>
                       <p className="text-neutral-700 dark:text-neutral-300">
-                        123 Education Lane<br />
-                        Chennai, Tamil Nadu 600001<br />
+                        123 Education Lane
+                        <br />
+                        Chennai, Tamil Nadu 600001
+                        <br />
                         India
                       </p>
                     </div>
@@ -226,16 +238,28 @@ const ContactPage = () => {
                 </h2>
                 <ul className="space-y-3">
                   <li className="flex justify-between items-center">
-                    <span className="text-neutral-700 dark:text-neutral-300">Monday - Friday</span>
-                    <span className="text-neutral-900 dark:text-white font-medium">9:00 AM - 6:00 PM</span>
+                    <span className="text-neutral-700 dark:text-neutral-300">
+                      Monday - Friday
+                    </span>
+                    <span className="text-neutral-900 dark:text-white font-medium">
+                      9:00 AM - 6:00 PM
+                    </span>
                   </li>
                   <li className="flex justify-between items-center">
-                    <span className="text-neutral-700 dark:text-neutral-300">Saturday</span>
-                    <span className="text-neutral-900 dark:text-white font-medium">10:00 AM - 4:00 PM</span>
+                    <span className="text-neutral-700 dark:text-neutral-300">
+                      Saturday
+                    </span>
+                    <span className="text-neutral-900 dark:text-white font-medium">
+                      10:00 AM - 4:00 PM
+                    </span>
                   </li>
                   <li className="flex justify-between items-center">
-                    <span className="text-neutral-700 dark:text-neutral-300">Sunday</span>
-                    <span className="text-neutral-900 dark:text-white font-medium">Closed</span>
+                    <span className="text-neutral-700 dark:text-neutral-300">
+                      Sunday
+                    </span>
+                    <span className="text-neutral-900 dark:text-white font-medium">
+                      Closed
+                    </span>
                   </li>
                 </ul>
               </div>

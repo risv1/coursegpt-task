@@ -1,12 +1,9 @@
 import React from "react";
 import Image from "next/image";
 import Footer from "@/components/common/Footer";
-import {
-  FiLayers,
-  FiEdit,
-  FiFileText,
-} from "react-icons/fi";
+import { FiLayers, FiEdit, FiFileText } from "react-icons/fi";
 import { LuBrain } from "react-icons/lu";
+import Navbar from "@/components/common/Navbar";
 
 const FeatureSection = ({
   title,
@@ -59,6 +56,7 @@ const FeatureSection = ({
 const FeaturesPage = () => {
   return (
     <>
+      <Navbar />
       <div className="w-full py-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
@@ -102,8 +100,8 @@ const FeaturesPage = () => {
           >
             <ul className="space-y-4 mb-8">
               <li className="flex items-start gap-2 text-neutral-700 dark:text-neutral-300">
-                <span className="text-green-500 font-bold">✓</span> Drag-and-drop
-                module organization
+                <span className="text-green-500 font-bold">✓</span>{" "}
+                Drag-and-drop module organization
               </li>
               <li className="flex items-start gap-2 text-neutral-700 dark:text-neutral-300">
                 <span className="text-green-500 font-bold">✓</span> Automatic
@@ -128,8 +126,8 @@ const FeaturesPage = () => {
                 formatting designed for educators
               </li>
               <li className="flex items-start gap-2 text-neutral-700 dark:text-neutral-300">
-                <span className="text-green-500 font-bold">✓</span> Section-by-section
-                AI regeneration
+                <span className="text-green-500 font-bold">✓</span>{" "}
+                Section-by-section AI regeneration
               </li>
               <li className="flex items-start gap-2 text-neutral-700 dark:text-neutral-300">
                 <span className="text-green-500 font-bold">✓</span> Embedded

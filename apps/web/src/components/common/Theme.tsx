@@ -10,7 +10,7 @@ const Theme: React.FC = () => {
   return (
     <div className="flex items-center justify-center gap-2">
       <button
-        className="text-2xl"
+        className="text-2xl hover:cursor-pointer "
         onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
       >
         {theme === "dark" ? (

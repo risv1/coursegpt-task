@@ -10,7 +10,7 @@ const Hero: React.FC = () => {
             <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-4 text-neutral-900 dark:text-white leading-tight">
               Create Better Courses
             </h1>
-            <div className="bg-neutral-950 w-fit px-4 py-2 rounded-xl">
+            <div className="bg-neutral-800 w-fit px-4 py-2 rounded-xl">
               <span className="text-4xl sm:text-5xl md:text-6xl text-red-400 font-bold italic">
                 Faster
               </span>
@@ -26,13 +26,13 @@ const Hero: React.FC = () => {
           <div className="flex flex-row gap-4 sm:gap-6 w-full sm:w-auto">
             <Link
               href="/dashboard"
-              className="bg-red-400 text-black font-medium rounded-full px-5 py-3 text-lg flex items-center gap-2 w-fit"
+              className="bg-red-400 hover:cursor-pointer  text-black font-medium rounded-full px-5 py-3 text-lg flex items-center gap-2 w-fit"
             >
               Get Started
             </Link>
             <Link
-              href="#features"
-              className="text-neutral-800 dark:text-neutral-200 hover:text-red-400 dark:hover:text-red-400 font-medium transition-colors text-center sm:text-left py-3"
+              href="/features"
+              className="text-neutral-800 hover:cursor-pointer  dark:text-neutral-200 hover:text-red-400 dark:hover:text-red-400 font-medium transition-colors text-center sm:text-left py-3"
             >
               Learn More
             </Link>
@@ -41,12 +41,12 @@ const Hero: React.FC = () => {
       </div>
 
       <div className="w-full md:w-1/2 hidden md:flex justify-center items-center p-6 md:p-8 mb-8 md:mb-0">
-        <div className="relative w-full h-[250px] sm:h-[350px] md:h-[500px] border-4 border-red-400 rounded-lg">
+        <div className="relative w-full h-[250px] sm:h-[350px] md:h-[500px] border-6 border-red-400 rounded-lg">
           <Image
             src="/images/hero.png"
             alt="CourseGPT Platform"
             fill
-            className="rounded-lg object-cover"
+            className="object-cover"
             priority
           />
         </div>
