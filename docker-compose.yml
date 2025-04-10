@@ -1,0 +1,21 @@
+services:
+  mongo:
+    image: mongo:latest
+    container_name: coursegpt-mongo
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=user
+      - MONGO_INITDB_ROOT_PASSWORD=password
+      - MONGO_INITDB_DATABASE=coursegpt
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - dev-network
+
+volumes:
+  mongo_data:
+    driver: local
+networks:
+  dev-network:
+    driver: bridge

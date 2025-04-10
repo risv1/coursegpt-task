@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
 import { useState, useEffect } from "react";
@@ -88,7 +89,7 @@ const mockApi = {
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   deleteChat: async (id: string): Promise<boolean> => {
-    await new Promise(resolve => setTimeout(resolve, 300));
+    await new Promise((resolve) => setTimeout(resolve, 300));
     return true;
   },
 };
@@ -149,22 +150,21 @@ const Dashboard: React.FC = () => {
       content: inputValue,
     };
 
-    // const apiResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL!}/generate`, {
-    //   method: "POST",
-    //   headers: {
-    //     "Content-Type": "application/json"
-    //   },
-    //   body: JSON.stringify({ prompt: inputValue })
-    // });
-
-    // if (!apiResponse.ok) {
-    //   console.error("Failed to fetch AI response");
-    //   return;
-    // }
-
-    // const responseData = await apiResponse.json();
-    // const content = responseData.data
-    const content = sampleResponse;
+    const apiResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/generate`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ prompt: inputValue }),
+      }
+    );
+    if (!apiResponse.ok) {
+      console.error("Failed to fetch AI response");
+      return;
+    }
+    const responseData = await apiResponse.json();
+    const content = responseData.data;
 
     const aiResponse: Message = {
       role: "assistant",
@@ -279,10 +279,10 @@ const Dashboard: React.FC = () => {
     try {
       await mockApi.deleteChat(id);
 
-      setChatList(prevList => prevList.filter(chat => chat.id !== id));
+      setChatList((prevList) => prevList.filter((chat) => chat.id !== id));
 
       if (chatId === id) {
-        const nextChat = chatList.find(chat => chat.id !== id);
+        const nextChat = chatList.find((chat) => chat.id !== id);
         if (nextChat) {
           router.push(`/dashboard?id=${nextChat.id}`);
         } else {
@@ -294,7 +294,6 @@ const Dashboard: React.FC = () => {
       setError("Failed to delete lesson. Please try again.");
     }
   };
-
 
   return (
     <DashLayout
@@ -334,9 +333,14 @@ const Dashboard: React.FC = () => {
       <DownloadModal
         isOpen={downloadModalOpen}
         onClose={() => setDownloadModalOpen(false)}
-        courseData={currentChat && currentChat.messages.length > 0
-          ? JSON.parse(currentChat.messages.find(m => m.role === 'assistant')?.content || '{}')
-          : null}
+        courseData={
+          currentChat && currentChat.messages.length > 0
+            ? JSON.parse(
+                currentChat.messages.find((m) => m.role === "assistant")
+                  ?.content || "{}"
+              )
+            : null
+        }
       />
     </DashLayout>
   );

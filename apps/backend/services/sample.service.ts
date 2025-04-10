@@ -1,4 +1,4 @@
-import type { ImageResult, SearchResult } from "../types/results.ts"
+import type { ImageResult, SearchResult } from "../types/results.js"
 
 export const imagesResult: ImageResult = {
   "searchParameters": {

@@ -1,20 +1,29 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { FiMail, FiLock, FiUser,  FiGithub } from "react-icons/fi";
+import { FiMail, FiLock, FiUser, FiGithub } from "react-icons/fi";
 import { FcGoogle } from "react-icons/fc";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
+import Toast from "@/components/common/Toast";
 
 const AuthPage: React.FC = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
+  const router = useRouter();
 
   const [formData, setFormData] = useState({
     username: "",
     email: "",
     password: "",
   });
+
+  const dismissError = () => setError(null);
+  const dismissSuccess = () => setSuccess(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -24,23 +33,125 @@ const AuthPage: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    setError(null);
+    setSuccess(null);
 
-    setTimeout(() => {
+    try {
+      const endpoint = isLogin ? "/api/auth/signin" : "/api/auth/signup";
+      const payload = isLogin
+        ? { email: formData.email, password: formData.password }
+        : { name: formData.username, email: formData.email, password: formData.password };
+      const authEndpoint = `${process.env.NEXT_PUBLIC_API_URL}${endpoint}`;
+
+      const response = await fetch(authEndpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Authentication failed");
+      }
+
+      localStorage.setItem("authToken", data.data.token);
+      localStorage.setItem("userData", JSON.stringify(data.data.user));
+
+      setSuccess(isLogin ? "Login successful!" : "Account created successfully!");
+
+      setTimeout(() => {
+        router.push("/dashboard");
+      }, 1000);
+    } catch (err) {
+      console.error("Auth error:", err);
+      setError("Authentication failed");
+    } finally {
       setIsLoading(false);
-      console.log(formData);
-    }, 1500);
+    }
   };
 
-  const handleGoogleLogin = () => {
+  const handleGoogleLogin = async () => {
     setIsLoading(true);
+    setError(null);
 
-    setTimeout(() => {
+    try {
+      const mockGoogleData = {
+        name: "Google User",
+        email: "google.user@example.com",
+      };
+
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/google`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(mockGoogleData),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Google authentication failed");
+      }
+
+      localStorage.setItem("authToken", data.data.token);
+      localStorage.setItem("userData", JSON.stringify(data.data.user));
+
+      setSuccess("Login with Google successful!");
+
+      setTimeout(() => {
+        router.push("/dashboard");
+      }, 1000);
+    } catch (err) {
+      console.error("Google auth error:", err);
+      setError("Google authentication failed");
+    } finally {
       setIsLoading(false);
-    }, 1500);
+    }
+  };
+
+  const handleGithubLogin = async () => {
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const mockGithubData = {
+        name: "GitHub User",
+        email: "github.user@example.com",
+      };
+
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/github`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(mockGithubData),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "GitHub authentication failed");
+      }
+
+      localStorage.setItem("authToken", data.data.token);
+      localStorage.setItem("userData", JSON.stringify(data.data.user));
+
+      setSuccess("Login with GitHub successful!");
+
+      setTimeout(() => {
+        router.push("/dashboard");
+      }, 1000);
+    } catch (err) {
+      console.error("GitHub auth error:", err);
+      setError("GitHub authentication failed");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
     <div className="min-h-screen w-full bg-white dark:bg-neutral-950 flex flex-col">
+      {error && <Toast message={error} type="error" onDismiss={dismissError} />}
+      {success && <Toast message={success} type="success" onDismiss={dismissSuccess} />}
+
       <div className="flex-1 flex flex-col items-center justify-center md:flex-row">
         <div className="w-full md:w-1/2 flex justify-center items-center p-6 md:p-16">
           <div className="w-full max-w-md">
@@ -55,7 +166,7 @@ const AuthPage: React.FC = () => {
             <div className="flex flex-col gap-4 mb-6">
               <button
                 onClick={handleGoogleLogin}
-                disabled={isLoading}
+                disabled={true}
                 className="flex items-center justify-center gap-2 py-3 px-4 border border-neutral-300 dark:border-neutral-700 rounded-lg hover:bg-neutral-50 dark:hover:bg-neutral-900 hover:cursor-pointer transition-colors disabled:opacity-70"
               >
                 <FcGoogle size={20} />
@@ -69,7 +180,7 @@ const AuthPage: React.FC = () => {
             <div className="flex flex-col gap-4 mb-6">
               <button
                 onClick={handleGoogleLogin}
-                disabled={isLoading}
+                disabled={true}
                 className="flex items-center justify-center gap-2 py-3 px-4 border border-neutral-300 dark:border-neutral-700 rounded-lg hover:bg-neutral-50 dark:hover:bg-neutral-900 hover:cursor-pointer transition-colors disabled:opacity-70"
               >
                 <FiGithub size={20} />

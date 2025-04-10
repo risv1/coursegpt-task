@@ -8,14 +8,19 @@
   "dependencies": {
     "@google/genai": "^0.8.0",
     "@hono/node-server": "^1.14.0",
+    "@types/jsonwebtoken": "^9.0.9",
+    "argon2": "^0.41.1",
     "dotenv": "^16.4.7",
     "hono": "^4.7.6",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.13.2",
     "pino": "^9.6.0",
     "pino-pretty": "^13.0.0",
     "zod": "^3.24.2"
   },
   "devDependencies": {
     "@types/node": "^20.11.17",
-    "tsx": "^4.7.1"
+    "tsx": "^4.7.1",
+    "typescript": "^5.8.3"
   }
 }

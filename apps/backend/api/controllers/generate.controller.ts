@@ -1,10 +1,10 @@
 import type { Context } from "hono";
-import { errors } from "../constants/errors.ts";
-import { generateContent } from "../../services/gemini.service.ts";
-import { mockSearchWeb, searchWeb } from "../../services/search.service.ts";
-import type { ImageResult, SearchResult } from "../../types/results.ts";
-import { env } from "../../config/env.ts";
-import logger from "../../config/logger.ts";
+import { errors } from "../constants/errors.js";
+import { generateContent } from "../../services/gemini.service.js";
+import { mockSearchWeb, searchWeb } from "../../services/search.service.js";
+import type { ImageResult, SearchResult } from "../../types/results.js";
+import { env } from "../../config/env.js";
+import logger from "../../config/logger.js";
 
 export const generateController = async (c: Context) => {
   try {
@@ -49,7 +49,7 @@ export const generateController = async (c: Context) => {
 
     for (const module of modules) {
       module.images = [];
-      const imageResponse = (await mockSearchWeb(
+      const imageResponse = (await searchWeb(
         module.title,
         "images"
       )) as ImageResult;
@@ -65,7 +65,7 @@ export const generateController = async (c: Context) => {
       }
 
       module.externalLinks = [];
-      const urlsResponse = (await mockSearchWeb(
+      const urlsResponse = (await searchWeb(
         module.title,
         "search"
       )) as SearchResult;
@@ -90,7 +90,9 @@ export const generateController = async (c: Context) => {
       modules: modules,
     };
 
-    return c.json(responseData, 200);
+    return c.json({
+      data: responseData
+    }, 200);
   } catch (error) {
     logger.error("Error in generateController:", error);
     return c.json(

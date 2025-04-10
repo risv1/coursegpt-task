@@ -1,6 +1,6 @@
-import { env } from "../config/env.ts"
-import type { ImageResult, SearchResult } from "../types/results.ts"
-import { imagesResult, searchResult } from "./sample.service.ts"
+import { env } from "../config/env.js"
+import type { ImageResult, SearchResult } from "../types/results.js"
+import { imagesResult, searchResult } from "./sample.service.js"
 
 export const searchWeb = async(q: string, type: "search" | "images") => {
   let data = JSON.stringify({
@@ -19,15 +19,17 @@ export const searchWeb = async(q: string, type: "search" | "images") => {
   })
 
   if (!response.ok) {
+    console.error("Failed to fetch data from Serper API")
     throw new Error("Failed to fetch data from Serper API")
   }
 
   const result = await response.json()
   if (result.error) {
+    console.error("Error from Serper API:", result.error)
     throw new Error(result.error)
   }
 
-  return result.data
+  return result
 }
 
 export const mockSearchWeb = async(q: string, type: "search" | "images") => {

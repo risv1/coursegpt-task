@@ -6,6 +6,8 @@ const corsMiddleware = async (c: Context, next: Next) => {
     allowMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     origin: "*",
     allowHeaders: ["Content-Type", "Authorization"],
+    exposeHeaders: ["Content-Length", "X-Request-Id"],
+    maxAge: 600,
     credentials: true,
   });
 

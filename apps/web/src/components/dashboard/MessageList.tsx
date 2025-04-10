@@ -184,7 +184,7 @@ const MessageList: React.FC<MessageListProps> = ({
                             </div>
                             <div className="px-3 py-1 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-full text-sm flex items-center">
                               <BsPlayCircle className="mr-1" size={14} />
-                              {courseContent.totalDuration} minutes
+                              {courseContent.totalDuration}
                             </div>
                             <div className="px-3 py-1 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-full text-sm flex items-center">
                               <HiOutlineDocumentText
