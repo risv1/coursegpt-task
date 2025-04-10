@@ -6,6 +6,10 @@ config();
 export type Environment = {
   PORT: number;
   NODE_ENV: string;
+  GEMINI_API_KEY: string;
+  GEMINI_MODEL: string;
+  SERPER_API_KEY: string;
+  SYSTEM_PROMPT: string;
 };
 
 const envSchema = z.object({
@@ -22,6 +26,18 @@ const envSchema = z.object({
     .refine((val) => ["development", "production", "test"].includes(val), {
       message: "NODE_ENV must be one of 'development', 'production', or 'test'",
     }),
+  GEMINI_API_KEY: z.string().refine(Boolean, {
+    message: "GEMINI_API_KEY is required",
+  }),
+  GEMINI_MODEL: z.string().default("gemini-pro").refine(Boolean, {
+    message: "GEMINI_MODEL is required",
+  }),
+  SERPER_API_KEY: z.string().refine(Boolean, {
+    message: "SERPER_API_KEY is required",
+  }),
+  SYSTEM_PROMPT: z.string().default("").refine(Boolean, {
+    message: "SYSTEM_PROMPT is required",
+  }),
 });
 
 export const env = envSchema.parse(process.env) as Environment;
