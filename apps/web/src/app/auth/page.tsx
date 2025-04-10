@@ -52,7 +52,6 @@ const AuthPage: React.FC = () => {
                 ? "Sign in to your account to continue"
                 : "Register to get started with CourseGPT"}
             </p>
-
             <div className="flex flex-col gap-4 mb-6">
               <button
                 onClick={handleGoogleLogin}

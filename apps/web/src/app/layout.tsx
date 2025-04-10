@@ -14,12 +14,10 @@ export default function RootLayout({
 }>) {
   return (
     <html suppressHydrationWarning>
-      <body
-        className="antialiased bg-white dark:bg-neutral-950"
-      >
-        <ThemeProvider attribute="class" enableSystem>
-          {children}
-        </ThemeProvider>
+      <body className="antialiased bg-white dark:bg-neutral-950">
+          <ThemeProvider attribute="class" enableSystem>
+            {children}
+          </ThemeProvider>
       </body>
     </html>
   );

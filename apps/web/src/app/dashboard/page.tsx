@@ -1,294 +1,344 @@
 "use client";
 
-import { useState } from "react";
-import Sidebar from "@/components/dashboard/Sidebar";
+import { useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import MessageList from "@/components/dashboard/MessageList";
-import MessageInput from "@/components/dashboard/MessageInput";
 import WelcomeScreen from "@/components/dashboard/WelcomeScreen";
 import DownloadModal from "@/components/dashboard/DownloadModal";
-import Theme from "@/components/common/Theme";
-
+import DashLayout from "@/layouts/DashLayout";
+import Loader from "@/components/common/Loader";
+import { sampleResponse } from "@/utils/sample";
+import Toast from "@/components/common/Toast";
 
 type Message = {
   role: "user" | "assistant";
   content: string;
-}
+};
 
 type Chat = {
   id: string;
   title: string;
   lastUpdated: string;
-}
+  messages: Message[];
+};
+
+const mockApi = {
+  getChatList: async () => {
+    await new Promise((resolve) => setTimeout(resolve, 300));
+    return [
+      { id: "1", title: "Introduction to Biology", lastUpdated: "2 days ago" },
+      {
+        id: "2",
+        title: "Advanced Physics Concepts",
+        lastUpdated: "1 week ago",
+      },
+      { id: "3", title: "History of Ancient Rome", lastUpdated: "3 weeks ago" },
+    ];
+  },
+
+  getChatById: async (id: string): Promise<Chat> => {
+    await new Promise((resolve) => setTimeout(resolve, 500));
+
+    const chats: Record<string, Chat> = {
+      "1": {
+        id: "1",
+        title: "Introduction to Biology",
+        lastUpdated: "2 days ago",
+        messages: [],
+      },
+      "2": {
+        id: "2",
+        title: "Advanced Physics Concepts",
+        lastUpdated: "1 week ago",
+        messages: [],
+      },
+      "3": {
+        id: "3",
+        title: "History of Ancient Rome",
+        lastUpdated: "3 weeks ago",
+        messages: [],
+      },
+    };
+
+    return (
+      chats[id] || {
+        id,
+        title: "New Lesson",
+        lastUpdated: "Just now",
+        messages: [],
+      }
+    );
+  },
+
+  updateChat: async (chat: Chat): Promise<Chat> => {
+    await new Promise((resolve) => setTimeout(resolve, 400));
+    return chat;
+  },
+
+  createChat: async (): Promise<Chat> => {
+    await new Promise((resolve) => setTimeout(resolve, 300));
+    const newId = Date.now().toString();
+    return {
+      id: newId,
+      title: "New Lesson",
+      lastUpdated: "Just now",
+      messages: [],
+    };
+  },
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  deleteChat: async (id: string): Promise<boolean> => {
+    await new Promise(resolve => setTimeout(resolve, 300));
+    return true;
+  },
+};
 
 const Dashboard: React.FC = () => {
-  const [messages, setMessages] = useState<Message[]>([]);
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const chatId = searchParams.get("id") || "1";
+
+  const [chatList, setChatList] = useState<
+    { id: string; title: string; lastUpdated: string }[]
+  >([]);
+  const [currentChat, setCurrentChat] = useState<Chat | null>(null);
   const [inputValue, setValue] = useState("");
   const [downloadModalOpen, setDownloadModalOpen] = useState(false);
-  const [chats, setChats] = useState<Chat[]>([
-    { id: "1", title: "Introduction to Biology", lastUpdated: "2 days ago" },
-    { id: "2", title: "Advanced Physics Concepts", lastUpdated: "1 week ago" },
-    { id: "3", title: "History of Ancient Rome", lastUpdated: "3 weeks ago" },
-  ]);
-  const [activeChat, setActiveChat] = useState<string | null>("1");
+  const [isChatLoading, setIsChatLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const dismissError = () => setError(null);
+
+  useEffect(() => {
+    const fetchChatList = async () => {
+      try {
+        const chats = await mockApi.getChatList();
+        setChatList(chats);
+      } catch (error) {
+        console.error("Failed to fetch chat list:", error);
+        setError("Failed to load your chats. Please try again.");
+      }
+    };
+
+    fetchChatList();
+  }, []);
+
+  useEffect(() => {
+    const fetchCurrentChat = async () => {
+      setIsChatLoading(true);
+      try {
+        const chat = await mockApi.getChatById(chatId);
+        setCurrentChat(chat);
+      } catch (error) {
+        console.error(`Failed to fetch chat ${chatId}:`, error);
+        setError("Failed to load chat content. Please try again.");
+      } finally {
+        setIsChatLoading(false);
+      }
+    };
+
+    fetchCurrentChat();
+  }, [chatId]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    if (!inputValue.trim()) return;
+    if (!inputValue.trim() || !currentChat) return;
 
     const userMessage: Message = {
       role: "user",
-      content: inputValue
+      content: inputValue,
     };
+
+    // const apiResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL!}/generate`, {
+    //   method: "POST",
+    //   headers: {
+    //     "Content-Type": "application/json"
+    //   },
+    //   body: JSON.stringify({ prompt: inputValue })
+    // });
+
+    // if (!apiResponse.ok) {
+    //   console.error("Failed to fetch AI response");
+    //   return;
+    // }
+
+    // const responseData = await apiResponse.json();
+    // const content = responseData.data
+    const content = sampleResponse;
 
     const aiResponse: Message = {
       role: "assistant",
-      content: JSON.stringify({
-        title: `Complete Course on ${inputValue}`,
-        description: `A comprehensive course covering all essential aspects of ${inputValue}, designed for effective learning and practical application.`,
-        totalDuration: "180 minutes",
-        targetAudience: "Intermediate level students",
-        learningOutcomes: [
-          `Understand core principles and concepts of ${inputValue}`,
-          `Apply analytical techniques to solve ${inputValue}-related problems`,
-          `Evaluate real-world applications of ${inputValue}`
-        ],
-        difficulty: "Intermediate",
-        prerequisites: ["Basic understanding of the subject area"],
-        modules: [
-          {
-            id: "mod1",
-            title: "Introduction to Key Concepts",
-            description: "Fundamental principles and terminology",
-            duration: "45 minutes",
-            content: `This module introduces you to the essential concepts and terminology in ${inputValue}. We'll explore the historical context and development of key ideas, providing a solid foundation for more advanced topics.
-
-            By the end of this module, you'll be familiar with the core vocabulary and conceptual framework needed to understand ${inputValue} in depth.`,
-            images: [
-              {
-                title: "Conceptual Overview",
-                url: "https://example.com/images/overview.jpg",
-                description: "Visual summary of key concepts and their relationships"
-              },
-              {
-                title: "Historical Development",
-                url: "https://example.com/images/history.jpg",
-                description: "Timeline showing the evolution of ideas in this field"
-              }
-            ],
-            externalLinks: [
-              {
-                title: "Introduction Video",
-                url: "https://example.com/videos/intro.mp4",
-                type: "video"
-              },
-              {
-                title: "Key Terminology Guide",
-                url: "https://example.com/readings/terminology.html",
-                type: "reading"
-              }
-            ],
-            quiz: [
-              {
-                question: `What is the primary purpose of studying ${inputValue}?`,
-                options: ["Historical appreciation", "Practical application", "Theoretical development", "Cultural significance"],
-                correctAnswer: 1,
-                explanation: "While all aspects have value, the practical application of these concepts is the primary purpose of study, as it enables real-world problem-solving and innovation."
-              },
-              {
-                question: "Which approach is most effective when beginning to study this subject?",
-                options: ["Memorizing definitions", "Understanding core principles", "Analyzing complex examples", "Studying historical context"],
-                correctAnswer: 1,
-                explanation: "Understanding the fundamental principles provides the necessary foundation to build more complex knowledge and apply concepts effectively in various contexts."
-              }
-            ]
-          },
-          {
-            id: "mod2",
-            title: "Practical Applications",
-            description: "Real-world uses and case studies",
-            duration: "60 minutes",
-            content: `In this module, we explore how the concepts from the introductory section apply in practical scenarios. You'll examine case studies and learn techniques for implementing these ideas in various contexts.
-
-            We'll analyze successful examples and discuss common challenges in application, along with strategies to overcome them.`,
-            images: [
-              {
-                title: "Application Framework",
-                url: "https://example.com/images/framework.jpg",
-                description: "Step-by-step process for practical implementation"
-              },
-              {
-                title: "Case Study Results",
-                url: "https://example.com/images/results.jpg",
-                description: "Visual data showing outcomes from real-world applications"
-              }
-            ],
-            externalLinks: [
-              {
-                title: "Expert Demonstration",
-                url: "https://example.com/videos/demo.mp4",
-                type: "video"
-              },
-              {
-                title: "Case Study Collection",
-                url: "https://example.com/readings/cases.html",
-                type: "document"
-              }
-            ],
-            quiz: [
-              {
-                question: "Which factor most significantly affects successful implementation?",
-                options: ["Available budget", "Team expertise", "Time constraints", "Technological tools"],
-                correctAnswer: 1,
-                explanation: "While all factors matter, team expertise is consistently the most critical element, as knowledgeable practitioners can adapt to budget limitations, time constraints, and technological challenges."
-              },
-              {
-                question: "What is the recommended first step when applying these concepts?",
-                options: ["Detailed planning", "Stakeholder analysis", "Resource gathering", "Problem definition"],
-                correctAnswer: 3,
-                explanation: "Clear problem definition is essential as the first step because it ensures all subsequent efforts are properly aligned with the actual needs and goals of the project."
-              }
-            ]
-          },
-          {
-            id: "mod3",
-            title: "Advanced Topics and Future Directions",
-            description: "Emerging trends and cutting-edge developments",
-            duration: "75 minutes",
-            content: `The final module explores advanced concepts and current research trends in ${inputValue}. We'll examine how the field is evolving and discuss potential future developments.
-
-            You'll learn about innovative approaches and gain insight into how experts are pushing boundaries in this area.`,
-            images: [
-              {
-                title: "Innovation Map",
-                url: "https://example.com/images/innovation.jpg",
-                description: "Visual representation of emerging trends and their connections"
-              },
-              {
-                title: "Future Projections",
-                url: "https://example.com/images/future.jpg",
-                description: "Data visualization of predicted developments over the next decade"
-              }
-            ],
-            externalLinks: [
-              {
-                title: "Expert Panel Discussion",
-                url: "https://example.com/videos/panel.mp4",
-                type: "video"
-              },
-              {
-                title: "Recent Research Summary",
-                url: "https://example.com/readings/research.pdf",
-                type: "research"
-              }
-            ],
-            quiz: [
-              {
-                question: "Which emerging trend is likely to have the most significant impact?",
-                options: ["Technological integration", "Interdisciplinary approaches", "Data-driven methodologies", "Global standardization"],
-                correctAnswer: 1,
-                explanation: "Interdisciplinary approaches are showing the most promise for breakthrough advances as they combine diverse perspectives and methodologies to address complex challenges in ways that single-discipline approaches cannot."
-              },
-              {
-                question: "What skill will be most valuable for practitioners in this field over the next decade?",
-                options: ["Technical specialization", "Cross-disciplinary collaboration", "Traditional methodologies", "Historical knowledge"],
-                correctAnswer: 1,
-                explanation: "As the field becomes more interconnected with other domains, the ability to collaborate across disciplinary boundaries will become increasingly valuable, enabling innovation and comprehensive solutions."
-              }
-            ]
-          }
-        ],
-        assessment: {
-          type: "Mixed",
-          components: [
-            { type: "Project work", weight: "40%" },
-            { type: "Written examination", weight: "35%" },
-            { type: "Participation and discussion", weight: "25%" }
-          ],
-          passingCriteria: "70% overall score with minimum 60% in each component"
-        }
-      })
+      content: JSON.stringify(content),
     };
 
-    setMessages([...messages, userMessage, aiResponse]);
+    const newMessages = [...currentChat.messages, userMessage, aiResponse];
+
+    let updatedTitle = currentChat.title;
+    if (currentChat.messages.length === 0) {
+      const words = inputValue.split(" ");
+      const shortTitle = words.slice(0, Math.min(4, words.length)).join(" ");
+      updatedTitle = `Course on: ${shortTitle}${words.length > 4 ? "..." : ""}`;
+    }
+
+    const updatedChat: Chat = {
+      ...currentChat,
+      messages: newMessages,
+      title: updatedTitle,
+      lastUpdated: "Just now",
+    };
+
+    setCurrentChat(updatedChat);
+
+    setChatList((prevList) =>
+      prevList.map((chat) =>
+        chat.id === updatedChat.id
+          ? { ...chat, title: updatedTitle, lastUpdated: "Just now" }
+          : chat
+      )
+    );
+
     setValue("");
 
-    if (messages.length === 0) {
-      const newChat = {
-        id: Date.now().toString(),
-        title: `Course on ${inputValue}`,
-        lastUpdated: "Just now",
-      };
-      setChats([newChat, ...chats]);
-      setActiveChat(newChat.id);
+    try {
+      await mockApi.updateChat(updatedChat);
+    } catch (error) {
+      console.log("Failed to save chat:", error);
+      setError("Failed to save your message. Please try again.");
     }
   };
 
-  const handleRegenerate = (index: number) => {
-    const updatedMessages = [...messages];
+  const handleRegenerate = async (index: number) => {
+    if (!currentChat) return;
+
+    const updatedMessages = [...currentChat.messages];
     updatedMessages[index].content += " [Regenerated content]";
-    setMessages(updatedMessages);
-  };
 
-  const handleDelete = (index: number) => {
-    const newMessages = [...messages];
-    newMessages.splice(index - 1, 2);
-    setMessages(newMessages);
-  };
-
-  const createNewChat = () => {
-    const newChat = {
-      id: Date.now().toString(),
-      title: "New Lesson",
+    const updatedChat: Chat = {
+      ...currentChat,
+      messages: updatedMessages,
       lastUpdated: "Just now",
     };
-    setChats([newChat, ...chats]);
-    setActiveChat(newChat.id);
-    setMessages([]);
+
+    setCurrentChat(updatedChat);
+
+    try {
+      await mockApi.updateChat(updatedChat);
+    } catch (error) {
+      console.log("Failed to regenerate content:", error);
+      setError("Failed to regenerate content. Please try again.");
+    }
   };
 
-  return (
-    <div className="flex h-screen w-screen overflow-hidden bg-neutral-50 dark:bg-neutral-950">
-      <div className="fixed top-10 right-10">
-        <Theme />
-      </div>
-      <Sidebar
-        chats={chats}
-        activeChat={activeChat}
-        setActiveChat={setActiveChat}
-        createNewChat={createNewChat}
-      />
+  const handleDelete = async (index: number) => {
+    if (!currentChat) return;
 
-      <div className="flex-1 flex flex-col rounded-r-xl overflow-hidden">
-        {messages.length === 0 ? (
-          <WelcomeScreen
-            inputValue={inputValue}
-            onInputChange={(e) => setValue(e.target.value)}
-            onSubmit={handleSubmit}
+    const newMessages = [...currentChat.messages];
+    newMessages.splice(index - 1, 2);
+
+    const updatedChat: Chat = {
+      ...currentChat,
+      messages: newMessages,
+      lastUpdated: "Just now",
+    };
+
+    setCurrentChat(updatedChat);
+
+    try {
+      await mockApi.updateChat(updatedChat);
+    } catch (error) {
+      console.log("Failed to delete message:", error);
+      setError("Failed to delete message. Please try again.");
+    }
+  };
+
+  const createNewChat = async () => {
+    try {
+      const newChat = await mockApi.createChat();
+
+      setChatList((prevList) => [
+        {
+          id: newChat.id,
+          title: newChat.title,
+          lastUpdated: newChat.lastUpdated,
+        },
+        ...prevList,
+      ]);
+
+      router.push(`/dashboard?id=${newChat.id}`);
+    } catch (error) {
+      console.error("Failed to create new chat:", error);
+      setError("Failed to create new chat. Please try again.");
+    }
+  };
+
+  const handleSetActiveChat = (id: string) => {
+    router.push(`/dashboard?id=${id}`);
+  };
+
+  const handleDeleteChat = async (id: string) => {
+    try {
+      await mockApi.deleteChat(id);
+
+      setChatList(prevList => prevList.filter(chat => chat.id !== id));
+
+      if (chatId === id) {
+        const nextChat = chatList.find(chat => chat.id !== id);
+        if (nextChat) {
+          router.push(`/dashboard?id=${nextChat.id}`);
+        } else {
+          createNewChat();
+        }
+      }
+    } catch (error) {
+      console.error("Failed to delete chat:", error);
+      setError("Failed to delete lesson. Please try again.");
+    }
+  };
+
+
+  return (
+    <DashLayout
+      chatId={chatId}
+      chats={chatList}
+      activeChat={chatId}
+      setActiveChat={handleSetActiveChat}
+      createNewChat={createNewChat}
+      deleteChat={handleDeleteChat}
+    >
+      {error && <Toast message={error} type="error" onDismiss={dismissError} />}
+      {isChatLoading ? (
+        <div className="flex flex-1 items-center justify-center">
+          <Loader size="lg" />
+        </div>
+      ) : currentChat && currentChat.messages.length === 0 ? (
+        <WelcomeScreen
+          inputValue={inputValue}
+          onInputChange={(e) => setValue(e.target.value)}
+          onSubmit={handleSubmit}
+        />
+      ) : currentChat ? (
+        <>
+          <MessageList
+            messages={currentChat.messages}
+            onRegenerate={handleRegenerate}
+            onDelete={handleDelete}
+            onDownload={() => setDownloadModalOpen(true)}
           />
-        ) : (
-          <>
-            <MessageList
-              messages={messages}
-              onRegenerate={handleRegenerate}
-              onDelete={handleDelete}
-              onDownload={() => setDownloadModalOpen(true)}
-            />
-            <MessageInput
-              value={inputValue}
-              onChange={(e) => setValue(e.target.value)}
-              onSubmit={handleSubmit}
-              placeholder="Ask follow-up questions or request modifications..."
-            />
-          </>
-        )}
-      </div>
+        </>
+      ) : (
+        <div className="flex flex-1 items-center justify-center text-neutral-500">
+          Chat not found
+        </div>
+      )}
 
       <DownloadModal
         isOpen={downloadModalOpen}
         onClose={() => setDownloadModalOpen(false)}
+        courseData={currentChat && currentChat.messages.length > 0
+          ? JSON.parse(currentChat.messages.find(m => m.role === 'assistant')?.content || '{}')
+          : null}
       />
-    </div>
+    </DashLayout>
   );
 };
 

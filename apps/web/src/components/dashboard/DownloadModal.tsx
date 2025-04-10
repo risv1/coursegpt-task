@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { generateWordDocument } from "@/utils/docx";
+import { generatePowerPoint } from "@/utils/ppt";
 import { BsFiletypeDocx } from "react-icons/bs";
 import { FaFilePowerpoint } from "react-icons/fa";
 import { IoIosClose } from "react-icons/io";
@@ -5,13 +8,20 @@ import { IoIosClose } from "react-icons/io";
 type DownloadModalProps = {
   isOpen: boolean;
   onClose: () => void;
+  courseData?: any;
 }
 
-const DownloadModal: React.FC<DownloadModalProps> = ({ isOpen, onClose }) => {
+const DownloadModal: React.FC<DownloadModalProps> = ({ isOpen, onClose, courseData }) => {
   if (!isOpen) return null;
 
   const handleDownload = (format: string) => {
-    console.log(`Downloading in ${format} format`);
+    if (format === 'pptx') {
+      generatePowerPoint(courseData);
+    } else if (format === 'docx') {
+      generateWordDocument(courseData);
+    } else {
+      console.log(`Downloading in ${format} format`);
+    }
     onClose();
   };
 

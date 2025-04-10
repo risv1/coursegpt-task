@@ -1,7 +1,8 @@
 import { CiCirclePlus } from "react-icons/ci";
 import { IoBookOutline } from "react-icons/io5";
+import { RiDeleteBin6Line } from "react-icons/ri";
 import Image from "next/image";
-
+import { useState } from "react";
 type Chat = {
   id: string;
   title: string;
@@ -13,6 +14,7 @@ type SidebarProps = {
   activeChat: string | null;
   setActiveChat: (id: string) => void;
   createNewChat: () => void;
+  deleteChat?: (id: string) => void;
 }
 
 const Sidebar: React.FC<SidebarProps> = ({
@@ -20,7 +22,21 @@ const Sidebar: React.FC<SidebarProps> = ({
   activeChat,
   setActiveChat,
   createNewChat,
+  deleteChat,
 }) => {
+  const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
+
+  const handleDeleteClick = (e: React.MouseEvent, chatId: string) => {
+    e.stopPropagation();
+
+    if (deleteConfirmId === chatId) {
+      deleteChat?.(chatId);
+      setDeleteConfirmId(null);
+    } else {
+      setDeleteConfirmId(chatId);
+    }
+  };
+
   return (
     <div className="w-72 bg-white dark:bg-neutral-900 border-r border-neutral-200 dark:border-neutral-700 flex flex-col shadow-md">
       <div className="p-5 border-b border-neutral-200 dark:border-neutral-700">
@@ -67,7 +83,7 @@ const Sidebar: React.FC<SidebarProps> = ({
             <div
               key={chat.id}
               onClick={() => setActiveChat(chat.id)}
-              className={`flex items-center p-3 rounded-xl cursor-pointer transition-all duration-200 ${
+              className={`flex items-center p-3 rounded-xl cursor-pointer transition-all duration-200 group ${
                 activeChat === chat.id
                   ? "bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800/30 shadow-sm"
                   : "hover:bg-neutral-100 dark:hover:bg-neutral-700 border border-transparent"
@@ -88,6 +104,19 @@ const Sidebar: React.FC<SidebarProps> = ({
                   {chat.lastUpdated}
                 </p>
               </div>
+
+              <button
+                onClick={(e) => handleDeleteClick(e, chat.id)}
+                className={`ml-2 p-1.5 rounded-full transition-all ${
+                  deleteConfirmId === chat.id
+                    ? "bg-red-500 text-white"
+                    : "opacity-0 group-hover:opacity-100 hover:bg-red-100 dark:hover:bg-red-900/30 text-neutral-500 dark:text-neutral-400"
+                }`}
+                title={deleteConfirmId === chat.id ? "Click again to confirm" : "Delete lesson"}
+                aria-label="Delete lesson"
+              >
+                <RiDeleteBin6Line size={16} />
+              </button>
             </div>
           ))}
         </div>
